@@ -1,8 +1,8 @@
 # Modul 9 Web Server Sederhana
 ### Implementasi Web Server Berbasis TCP Socket Programming
 
-Nama    : Naufal Fudhail 
-NIM     : 103072400013  
+Nama    : Samuel Nelson Wabiser
+NIM     : 103072400111
 Kelas   : IF-04-04
 
 ---
