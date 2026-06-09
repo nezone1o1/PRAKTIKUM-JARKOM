@@ -36,12 +36,12 @@ Dalam sistem DHCP, distribusi alamat IP dari server ke perangkat klien dilakukan
 2. Filter lalu lintas data pada Wireshark dengan mengetik kata kunci `dhcp` atau `bootp`.
 3. Jalankan Command Prompt (CMD) menggunakan hak akses Administrator.
 4. Lepaskan konfigurasi IP yang saat ini menempel pada perangkat dengan mengetik perintah `ipconfig /release`.
-![ipconfig /release](../Assets/Modul11.1.png)
+![ipconfig /release](../assets/Modul11.1.png)
 5. Pastikan Wireshark mulai merekam lalu lintas data yang masuk dan keluar.
 6. Minta alokasi alamat IP baru dari server DHCP dengan mengeksekusi perintah `ipconfig /renew`.
-![ipconfig /renew](../Assets/Modul11.2.png)
+![ipconfig /renew](../assets/Modul11.2.png)
 7. Tunggu hingga proses pencarian IP selesai, kemudian hentikan perekaman (stop capture) di Wireshark.
-![hasil capture](../Assets/Modul11.3.png)
+![hasil capture](../assets/Modul11.3.png)
 
 ---
 
