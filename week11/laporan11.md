@@ -1,5 +1,8 @@
-# Modul 11 DHCP (*Dynamic Host Configuration Protocol*)
-### Mekanisme Pengalamatan Dinamis menggunakan Wireshark
+
+
+# Modul 11 DHCP (Dynamic Host Configuration Protocol)
+
+### Analisis Alokasi IP Dinamis via Wireshark
 
 Nama    : Samuel Nelson Wabiser
 NIM     : 103072400111
@@ -7,74 +10,83 @@ Kelas   : IF-04-04
 
 ---
 
-## 📋 Daftar Isi
-- [Dasar Teori (DORA Process)](#-dasar-teori-dora-process)
-- [Langkah Praktikum](#-langkah-praktikum)
-- [Analisis Paket DHCP](#-analisis-paket-dhcp)
-- [Kesimpulan](#-kesimpulan)
+## Daftar Isi
+
+* [Konsep Dasar (Proses DORA)]
+* [Prosedur Percobaan]
+* [Bedah Paket DHCP]
+* [Kesimpulan]
 
 ---
 
-## 📖 Teori 
-Dalam protokol DHCP, ada 4 tahap untuk memberikan alamat IP kepada klien, yaitu
-1. **DHCP Discover**. Klien menyiarkan pesan untuk mencari server DHCP yang tersedia.
-2. **DHCP Offer**. Server merespons dengan tawaran alamat IP dan parameter konfigurasi lainnya.
-3. **DHCP Request**. Klien meminta alamat IP yang ditawarkan tersebut kepada server.
-4. **DHCP ACK**. Server memberikan konfirmasi akhir bahwa alamat IP telah resmi dipinjamkan (*lease*).
+## Konsep Dasar
+
+Dalam sistem DHCP, distribusi alamat IP dari server ke perangkat klien dilakukan melalui empat tahapan utama yang dikenal sebagai proses DORA:
+
+1. **DHCP Discover**: Klien mengirimkan pesan siaran (broadcast) ke seluruh jaringan untuk mendeteksi keberadaan server DHCP yang aktif.
+2. **DHCP Offer**: Server yang menerima pesan tersebut akan membalas dengan menawarkan sebuah alamat IP beserta konfigurasi jaringan lainnya.
+3. **DHCP Request**: Klien merespons tawaran tersebut dengan mengirimkan permintaan resmi untuk menggunakan alamat IP yang telah dialokasikan.
+4. **DHCP ACK**: Server memberikan konfirmasi final (acknowledgment) bahwa alamat IP tersebut telah resmi dipinjamkan dan siap digunakan oleh klien.
 
 ---
 
-## 🚀 Langkah Praktikum
-1. Jalankan Wireshark dan pilih jaringan yang aktif.
-2. Gunakan filter `dhcp` atau `bootp` pada Wireshark.
-3. Buka Terminal/CMD sebagai Administrator.
-4. Jalankan perintah `ipconfig /release` untuk melepaskan IP saat ini.
+## Percobaan
 
+1. Aktifkan aplikasi Wireshark, lalu tentukan interface jaringan yang sedang terkoneksi ke internet.
+2. Filter lalu lintas data pada Wireshark dengan mengetik kata kunci `dhcp` atau `bootp`.
+3. Jalankan Command Prompt (CMD) menggunakan hak akses Administrator.
+4. Lepaskan konfigurasi IP yang saat ini menempel pada perangkat dengan mengetik perintah `ipconfig /release`.
 ![ipconfig /release](../Assets/Modul11.1.png)
-
-5. Mulai tangkap paket-paket yang akan muncul di Wireshark.
-6. Jalankan perintah `ipconfig /renew` untuk meminta IP baru dari server.
-
+5. Pastikan Wireshark mulai merekam lalu lintas data yang masuk dan keluar.
+6. Minta alokasi alamat IP baru dari server DHCP dengan mengeksekusi perintah `ipconfig /renew`.
 ![ipconfig /renew](../Assets/Modul11.2.png)
-
-7. Setelah beberapa detik, *stop capture* di Wireshark.
-
+7. Tunggu hingga proses pencarian IP selesai, kemudian hentikan perekaman (stop capture) di Wireshark.
 ![hasil capture](../Assets/Modul11.3.png)
 
 ---
 
-## 📝 Analisis Paket DHCP
+## Bedah Paket DHCP
 
-Berdasarkan hasil tangkapan paket (*trace*), berikut adalah poin-poin analisis utama:
+Berdasarkan data paket yang berhasil direkam pada Wireshark, berikut adalah poin-poin analisis pentingnya:
 
-### 1. Transport Layer (UDP)
-DHCP beroperasi menggunakan protokol **UDP**.
-* **Source Port**: 68.
-* **Destination Port**: 67.
+### 1. Lapisan Transport (UDP)
 
-### 2. Identifikasi Pesan DORA
-| Tipe Pesan | Source IP | Destination IP | Deskripsi |
-| :--- | :--- | :--- | :--- |
-| **Discover** | `0.0.0.0` | `255.255.255.255` | Broadcast mencari server. |
-| **Offer** | `10.218.0.253` | `10.218.2.21` | Tawaran IP dari server. |
-| **Request** | `0.0.0.0` | `255.255.255.255` | Permintaan dari klien. |
-| **ACK** | `10.218.0.253` | `10.218.2.21` | Konfirmasi dari server. |
+Protokol DHCP memanfaatkan jalur komunikasi **UDP** (User Datagram Protocol).
 
-### 3. Field Penting dalam Header DHCP
-* **Transaction ID**. Angka unik (contoh: `0xbc42c45e`) yang digunakan untuk mencocokkan permintaan klien dengan balasan server.
-* **Client IP Address**. Alamat IP yang ditawarkan oleh server kepada klien.
+* **Port Asal (Source Port)**: 68.
+* **Port Tujuan (Destination Port)**: 67.
 
+### 2. Penelusuran Pesan DORA dalam Jaringan
 
-## ✅ Kesimpulan
-Melalui praktikum ini, mekanisme *connectionless* dari DHCP terlihat jelas melalui penggunaan UDP dan alamat broadcast (`255.255.255.255`) karena pada tahap awal klien belum memiliki identitas IP. Penggunaan **Transaction ID** sangat krusial untuk memastikan klien menerima konfigurasi yang tepat di tengah lalu lintas jaringan yang padat.
+| Kategori Pesan | IP Asal (Source) | IP Tujuan (Destination) | Penjelasan Operasional |
+| --- | --- | --- | --- |
+| **Discover** | `0.0.0.0` | `255.255.255.255` | Klien menyiarkan pesan ke jaringan karena belum punya IP. |
+| **Offer** | `10.218.0.253` | `10.218.2.21` | Server mengirimkan rekomendasi alamat IP untuk klien. |
+| **Request** | `0.0.0.0` | `255.255.255.255` | Klien menyiarkan permintaan untuk menyetujui tawaran IP tersebut. |
+| **ACK** | `10.218.0.253` | `10.218.2.21` | Server memvalidasi bahwa IP resmi disewakan ke klien. |
 
+### 3. Komponen Utama pada Header DHCP
 
-## 🤝 Kontribusi
-Laporan ini disusun sebagai bagian dari tugas praktikum S-1 Informatika Telkom University. Kalau kamu ingin memberikan saran atau perbaikan pada dokumentasi ini, silakan ikuti langkah berikut:
-1.  Lakukan **Fork** pada repositori ini.
-2.  Buat branch baru untuk fitur atau perbaikan Anda.
-3.  Kirimkan **Pull Request** dengan penjelasan mengenai perubahan yang dilakukan.
+* **Transaction ID**: Sebuah kode identifikasi unik (misalnya: `0xbc42c45e`) yang berfungsi menyelaraskan setiap pesan request dari klien dengan jawaban dari server agar tidak tertukar.
+* **Client IP Address**: Alamat network spesifik yang dialokasikan oleh DHCP server agar bisa dipakai oleh perangkat klien.
 
 ---
+
+## Kesimpulan
+
+Praktikum ini membuktikan bahwa DHCP mengandalkan sifat connectionless dari protokol UDP. Penggunaan alamat broadcast (`255.255.255.255`) mutlak diperlukan pada fase awal karena perangkat klien sama sekali belum memiliki identitas IP formal di jaringan tersebut. Selain itu, eksistensi **Transaction ID** memegang peranan vital untuk menjamin akurasi distribusi IP, sehingga tidak terjadi tumpang tindih konfigurasi meskipun lalu lintas data di dalam jaringan sedang padat.
+
+---
+
+## Kontribusi
+
+Dokumen laporan ini ditulis guna memenuhi penugasan praktikum pada program studi S-1 Informatika di Telkom University. Bagi Anda yang ingin memberikan masukan, kritik, maupun perbaikan terhadap isi dokumentasi ini, silakan ikuti panduan berikut:
+
+1. Lakukan **Fork** pada repositori ini.
+2. Buatlah branch kerja baru untuk menampung fitur atau revisi Anda.
+3. Ajukan **Pull Request** disertai deskripsi mendalam mengenai perubahan yang Anda ajukan.
+
+---
+
 **Informatics Lab - Telkom University**
 *Copyright © 2026 - UKM Coder*
